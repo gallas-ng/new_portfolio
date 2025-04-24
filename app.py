@@ -66,15 +66,16 @@ div[data-testid="stAppViewBlockContainer"] {
     gap: 7px;
     justify-content: space-between;
 }
-.col.s12.m3 {
-    width: 23%;
+.col.s12.m4 {
+    width: 33%;
 }
 .col.s12.m6 {
     width: 48%;
 }
 @media (max-width: 768px) {
-    .col.s12.m2, .col.s12.m3, .col.s12.m6, .col.s12.m10, .col.s12.m12 {
+    .col.s12.m2, .col.s12.m4, .col.s12.m6, .col.s12.m10, .col.s12.m12 {
         width: 100% !important;
+        height: 100%;
     }
     img.responsive-img.circle {
         width: 100px !important;
@@ -126,13 +127,13 @@ st.sidebar.header("🎓 Diplomas")
 diplomas = tblDiplomas.all(sort=['-Year'])
 for diploma in diplomas:
     d = diploma['fields']
-    st.sidebar.markdown(f"**{d['Title']}**\n{d['School']} ({d['Year']})")
+    st.sidebar.markdown(f"**{d['Title']}** - \n{d['School']} ({d['Year']})")
 
 st.sidebar.header("📜 Certifications")
 certifications = tblCertifications.all(sort=['-Year'])
 for cert in certifications:
     c = cert['fields']
-    st.sidebar.markdown(f"**{c['Title']}**\n{c['Platform']} ({c['Year']})")
+    st.sidebar.markdown(f"**{c['Title']}** - \n{c['Platform']} ({c['Year']})")
 
 # Profile
 profile = tblprofile.all()[0]['fields']
@@ -149,7 +150,7 @@ profileHTML = f"""
 <h1>{name} <span class="blue-text text-darken-3">Portfolio</span> </h1>
 <h5>{profileTagline}</h5>
 </div>
-<div class="row flex-wrap">
+<div class="row">
     <div class="col s12 m12">
         <div class="card">
             <div class="card-content">
@@ -161,9 +162,8 @@ profileHTML = f"""
                             <span class="card-title">About me</span>
                             <p>{profileDescription}</p>
                             <div class="card-action">
-                            <a href="{linkedInLink}" class="tooltipped blue-text text-darken-3" data-tooltip="LinkedIn"><i class="fa-brands fa-linkedin fa-2xl"></i></a>
-                            <a href="{githubLink}" class="tooltipped blue-text text-darken-3" data-tooltip="GitHub"><i class="fa-brands fa-github fa-2xl"></i></a>
-                            <a href="{xLink}" class="tooltipped blue-text text-darken-3" data-tooltip="X / Twitter"><i class="fa-brands fa-x-twitter fa-2xl"></i></a>
+                                <a href="{linkedInLink}" class="tooltipped blue-text text-darken-3" data-tooltip="LinkedIn"><i class="fa-brands fa-linkedin fa-2xl"></i></a>
+                                <a href="{githubLink}" class="tooltipped black-text text-darken-3" data-tooltip="GitHub"><i class="fa-brands fa-github fa-2xl"></i></a>
                             </div>
                         </div>
                     </div>
@@ -190,7 +190,7 @@ with st.container():
             skillExperience = int(today) - int(skillYears)
 
             skillHTML = f"""
-                <div class="col s12 m3">
+                <div class="col s12 m4">
                     <div class="card small">
                         <div class="card-content">
                             <span class="card-title">{skillName}</span>
@@ -208,7 +208,7 @@ with st.container():
                 </div>
             """
             tabSkills_content += skillHTML
-        st.html(f"<div class='row flex-wrap'>{tabSkills_content}</div>")
+        st.html(f"<div class='row'>{tabSkills_content}</div>")
 
     with tabPortfolio:
         tabPortfolio_content = ""
@@ -233,7 +233,7 @@ with st.container():
                         <div class="card-content">
                             <span class="card-title">{projectName}</span>
                             <p>{projectDescription}</p>
-                            <div class="row hide-on-small-only">
+                            <div class="row">
                                 <div class="col s12 m6">
                                     <h6>Knowledge:</h6>
                                     {knowledgeHTML}
@@ -251,7 +251,7 @@ with st.container():
                 </div>
             """
             tabPortfolio_content += projectHTML
-        st.html(f"<div class='row flex-wrap'>{tabPortfolio_content}</div>")
+        st.html(f"<div class='row'>{tabPortfolio_content}</div>")
 
     with tabContact:
         st.info("Send me a message if you'd like to collaborate or have any inquiries.")
