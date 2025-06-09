@@ -107,12 +107,12 @@ st.html(customStyle)
 
 
 # Load Excel files
-diplomas_df = pd.read_excel("sheets\diplomas.xlsx")
-certifications_df = pd.read_excel("sheets\certifications.xlsx")
-profile_df = pd.read_excel("sheets\profile.xlsx")
-skills_df = pd.read_excel("sheets\skills.xlsx")
-projects_df = pd.read_excel("sheets\projects.xlsx")
-contacts_df = pd.read_excel("sheets\contacts.xlsx")
+diplomas_df = pd.read_excel("sheets/diplomas.xlsx")
+certifications_df = pd.read_excel("sheets/certifications.xlsx")
+profile_df = pd.read_excel("sheets/profile.xlsx")
+skills_df = pd.read_excel("sheets/skills.xlsx")
+projects_df = pd.read_excel("sheets/projects.xlsx")
+contacts_df = pd.read_excel("sheets/contacts.xlsx")
 
 # Sidebar with diplomas and certifications
 st.sidebar.header("🎓 Diplomas")
