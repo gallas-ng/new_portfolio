@@ -254,7 +254,7 @@ with st.container():
                 "Notes": parNotes
             }])
             contacts_df = pd.concat([contacts_df, new_contact], ignore_index=True)
-            contacts_df.to_excel("contacts.xlsx", index=False)  # Save the updated contacts
+            contacts_df.to_excel("sheets\contacts.xlsx", index=False)  # Save the updated contacts
             st.toast("Message sent!")
 
 # Footer
