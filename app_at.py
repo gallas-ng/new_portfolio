@@ -1,6 +1,8 @@
-from datetime import datetime
 import streamlit as st
 import pandas as pd
+
+from pyairtable import Api
+from datetime import datetime
 import html
 
 # Configure the Streamlit page settings
@@ -105,35 +107,43 @@ h1, h5, h6 {
 # Apply the custom styles
 st.html(customStyle)
 
+# Load API Key and setup Airtable
+AIRTABLE_API_KEY = st.secrets.AIRTABLE_API_KEY
+AIRTABLE_BASE_ID = 'appP0fdxdVOelOFAb'
+api = Api(AIRTABLE_API_KEY)
 
-# Load Excel files
-diplomas_df = pd.read_excel("sheets\diplomas.xlsx")
-certifications_df = pd.read_excel("sheets\certifications.xlsx")
-profile_df = pd.read_excel("sheets\profile.xlsx")
-skills_df = pd.read_excel("sheets\skills.xlsx")
-projects_df = pd.read_excel("sheets\projects.xlsx")
-contacts_df = pd.read_excel("sheets\contacts.xlsx")
+# Airtable tables
+tblprofile = api.table(AIRTABLE_BASE_ID, 'profile')
+tblprojects = api.table(AIRTABLE_BASE_ID, 'projects')
+tblskills = api.table(AIRTABLE_BASE_ID, 'skills')
+tblContacts = api.table(AIRTABLE_BASE_ID, 'contacts')
+tblDiplomas = api.table(AIRTABLE_BASE_ID, 'Diplomas')
+tblCertifications = api.table(AIRTABLE_BASE_ID, 'Certifications')
+
+
 
 # Sidebar with diplomas and certifications
 st.sidebar.header("🎓 Diplomas")
-diplomas = diplomas_df.sort_values(by='Year', ascending=False)
-for _, diploma in diplomas.iterrows():
-    st.sidebar.markdown(f"**{diploma['Title']}** - \n{diploma['School']} ({diploma['Year']})")
+diplomas = tblDiplomas.all(sort=['-Year'])
+for diploma in diplomas:
+    d = diploma['fields']
+    st.sidebar.markdown(f"**{d['Title']}** - \n{d['School']} ({d['Year']})")
 
 st.sidebar.header("📜 Certifications")
-certifications = certifications_df.sort_values(by='Year', ascending=False)
-for _, cert in certifications.iterrows():
-    st.sidebar.markdown(f"**{cert['Title']}** - \n{cert['Platform']} ({cert['Year']})")
+certifications = tblCertifications.all(sort=['-Year'])
+for cert in certifications:
+    c = cert['fields']
+    st.sidebar.markdown(f"**{c['Title']}** - \n{c['Platform']} ({c['Year']})")
 
 # Profile
-profile = profile_df.iloc[0]
+profile = tblprofile.all()[0]['fields']
 name = profile['Name']
 profileDescription = profile['Description']
 profileTagline = profile['tagline']
 linkedInLink = profile['linkedin']
 xLink = profile['x']
 githubLink = profile['github']
-picture = profile['picture']
+picture = profile['picture'][0]['url']
 
 profileHTML = f"""
 <div class="row">
@@ -163,13 +173,15 @@ profileHTML = f"""
     </div>
 """
 st.html(profileHTML)
+
 # Tabs
 with st.container():
     tabSkills, tabPortfolio, tabContact = st.tabs(['💡 My skills', '🚀 My projects', '📬 Contact'])
 
     with tabSkills:
         tabSkills_content = ""
-        for _, skill in skills_df.sort_values(by='Level', ascending=False).iterrows():
+        for skill in tblskills.all(sort=['-Level']):
+            skill = skill['fields']
             skillName = skill['Name']
             skillDescription = skill['Notes']
             skillLevel = skill['Level']
@@ -200,15 +212,16 @@ with st.container():
 
     with tabPortfolio:
         tabPortfolio_content = ""
-        for _, project in projects_df.iterrows():
+        for project in tblprojects.all():
+            project = project["fields"]
             projectName = project['Name']
             projectDescription = project['Description']
-            projectSkills = project['skills'].split(",")  # Assuming skills are comma-separated
-            projectKnowledge = project['Knowledge'].split(",")  # Assuming knowledge is comma-separated
+            projectSkils = project['skills']
+            projectKnowledge = project['Knowledge']
             projectLink = project['link']
-            projectImageUrl = project['image']
+            projectImageUrl = project['image'][0]['url']
 
-            skillsHTML = "".join([f'<div class="chip green lighten-4">{p}</div>' for p in projectSkills])
+            skillsHTML = "".join([f'<div class="chip green lighten-4">{p}</div>' for p in projectSkils])
             knowledgeHTML = "".join([f'<div class="chip blue lighten-4">{p}</div>' for p in projectKnowledge])
 
             projectHTML = f"""
@@ -247,14 +260,7 @@ with st.container():
         parPhone = st.text_input("Your phone number")
         parNotes = st.text_area("Your message")
         if st.button("Send"):
-            new_contact = pd.DataFrame([{
-                "Name": parName,
-                "email": parEmail,
-                "phone": parPhone,
-                "Notes": parNotes
-            }])
-            contacts_df = pd.concat([contacts_df, new_contact], ignore_index=True)
-            contacts_df.to_excel("contacts.xlsx", index=False)  # Save the updated contacts
+            tblContacts.create({"Name": parName, "email": parEmail, "phone": parPhone, "Notes": parNotes})
             st.toast("Message sent!")
 
 # Footer
